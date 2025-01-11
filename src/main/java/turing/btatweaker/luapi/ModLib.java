@@ -16,8 +16,9 @@ public class ModLib extends TwoArgFunction {
         t.set("isModLoaded", new IsModLoaded());
 
         for (ModLibrary lib : BTATweaker.modLibs) {
+            LuaValue library = lib.call(modname, env);
             lib.getValidNames().forEach((name) -> {
-                t.set(name, lib);
+                t.set(name, library);
             });
         }
 
