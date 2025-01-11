@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "id": "btatweaker",
+  "version": "${version}",
+  "name": "BTA Tweaker",
+  "description": "",
+  "authors": [
+    "Turing6"
+  ],
+  "contact": {
+    "homepage": "",
+    "sources": ""
+  },
+  "license": "GPL-3.0",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "turing.btatweaker.BTATweaker"
+    ],
+    "beforeGameStart": [
+      "turing.btatweaker.BTATweaker"
+    ],
+    "afterGameStart": [
+      "turing.btatweaker.BTATweaker"
+    ],
+    "recipesReady": [
+      "turing.btatweaker.BTATweaker"
+    ]
+  },
+  "mixins": [
+    "btatweaker.mixins.json"
+  ],
+  "depends": {
+    "minecraft": "*",
+    "fabricloader": ">=0.15.5",
+    "halplibe": ">=5.0.0"
+  },
+  "suggests": {
+
+  }
+}
