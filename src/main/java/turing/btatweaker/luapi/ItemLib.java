@@ -26,7 +26,7 @@ public class ItemLib extends TwoArgFunction {
             } else if (arg.isstring(1)) {
                 String name = arg.checkjstring(1);
                 for (Item item : Item.itemsList) {
-                    if (item != null && (item.getKey().equals(name) || item.namespaceID.toString().equals(name))) {
+                    if (item != null && isSameItemName(item, name)) {
                         itemId = item.id;
                         break;
                     }
@@ -47,6 +47,10 @@ public class ItemLib extends TwoArgFunction {
             } else {
                 throw new LuaError("could not find item with id '" + itemId + "'");
             }
+        }
+
+        private boolean isSameItemName(Item item, String name) {
+            return item.getKey().equals(name) ;//|| item.namespaceId.toString().equals(name);
         }
     }
 }

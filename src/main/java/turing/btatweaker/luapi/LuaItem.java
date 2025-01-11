@@ -26,9 +26,10 @@ public class LuaItem extends LuaClass implements IItemConvertible, IIngredient {
         rawset("GetTranslationKey", new GetTranslationKey());
         rawset("Amount", stack.stackSize);
         rawset("Id", realItem.id);
+        /*removed until 7.2 is no longer supported
         rawset("Namespace", realItem.namespaceID.namespace);
         rawset("ModId", realItem.namespaceID.namespace);
-        rawset("RegistryName", realItem.namespaceID.toString());
+        rawset("RegistryName", realItem.namespaceID.toString());*/
         rawset("TranslationKey", realItem.getKey());
         rawset("Metadata", stack.getMetadata());
     }

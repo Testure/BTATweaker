@@ -3,7 +3,6 @@ package turing.btatweaker.lua;
 import net.minecraft.core.net.command.TextFormatting;
 import net.minecraft.core.util.collection.Pair;
 import net.minecraft.core.world.World;
-import net.minecraft.server.MinecraftServer;
 import org.luaj.vm2.*;
 import org.luaj.vm2.compiler.LuaC;
 import org.luaj.vm2.lib.*;
@@ -140,7 +139,8 @@ public class ScriptManager {
         if (toLog.isEmpty()) return;
         if (world == null) {
             for (String s : toLog) {
-                MinecraftServer.getInstance().logInfo(s);
+                //removed until 7.2 is no longer supported
+                //MinecraftServer.getInstance().logInfo(s);
             }
         } else {
             for (String s : toLog) {

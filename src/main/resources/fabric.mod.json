@@ -33,7 +33,7 @@
   "depends": {
     "minecraft": "*",
     "fabricloader": ">=0.15.5",
-    "halplibe": ">=5.0.0"
+    "halplibe": ">=4.1.0"
   },
   "suggests": {
 
