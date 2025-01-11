@@ -3,7 +3,7 @@
   "id": "btatweaker",
   "version": "${version}",
   "name": "BTA Tweaker",
-  "description": "",
+  "description": "Allows the use LUA scripts to tweak the game in various ways.",
   "authors": [
     "Turing6"
   ],
