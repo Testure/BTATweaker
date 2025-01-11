@@ -29,6 +29,7 @@ public class RecipeLib extends TwoArgFunction {
         t.set("addItemsToGroup", new AddItemsToGroup());
         t.set("getItemsInGroup", new GetItemsInGroup());
         t.set("removeItemsFromGroup", new RemoveItemsFromGroup());
+        t.set("addJsonRecipe", new AddJsonRecipe());
         t.set("Workbench", new WorkbenchLib());
         t.set("CraftingTable", t.get("Workbench"));
         t.set("Furnace", new FurnaceLib());
@@ -66,6 +67,13 @@ public class RecipeLib extends TwoArgFunction {
             }
         }
         return null;
+    }
+
+    protected static final class AddJsonRecipe extends OneArgFunction {
+        @Override
+        public LuaValue call(LuaValue arg) {
+            throw new LuaError("Unimplemented method.");
+        }
     }
 
     protected static final class GetItemsInGroup extends TwoArgFunction {
