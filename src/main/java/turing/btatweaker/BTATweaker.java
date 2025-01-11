@@ -13,13 +13,14 @@ import turing.btatweaker.api.ModLibrary;
 import turing.btatweaker.impl.ExecutionPointPreprocessor;
 import turing.btatweaker.lua.LibGatherer;
 import turing.btatweaker.lua.ScriptManager;
+import turniplabs.halplibe.util.ClientStartEntrypoint;
 import turniplabs.halplibe.util.GameStartEntrypoint;
 import turniplabs.halplibe.util.RecipeEntrypoint;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class BTATweaker implements ModInitializer, GameStartEntrypoint, RecipeEntrypoint, IScriptPropertyHolder {
+public class BTATweaker implements ModInitializer, GameStartEntrypoint, RecipeEntrypoint, ClientStartEntrypoint, IScriptPropertyHolder {
     public static final String MOD_ID = "btatweaker";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
     public static final RecipeNamespace namespace = new RecipeNamespace();
@@ -84,6 +85,16 @@ public class BTATweaker implements ModInitializer, GameStartEntrypoint, RecipeEn
     @Override
     public void afterGameStart() {
         manager.executeScripts(ScriptManager.AFTER_GAME_START);
+    }
+
+    @Override
+    public void beforeClientStart() {
+        manager.executeScripts(ScriptManager.BEFORE_CLIENT_START);
+    }
+
+    @Override
+    public void afterClientStart() {
+        manager.executeScripts(ScriptManager.AFTER_CLIENT_START);
     }
 
     @Override

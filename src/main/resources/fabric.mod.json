@@ -23,6 +23,12 @@
     "afterGameStart": [
       "turing.btatweaker.BTATweaker"
     ],
+    "beforeClientStart": [
+      "turing.btatweaker.BTATweaker"
+    ],
+    "afterClientStart": [
+      "turing.btatweaker.BTATweaker"
+    ],
     "recipesReady": [
       "turing.btatweaker.BTATweaker"
     ]

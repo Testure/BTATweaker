@@ -12,10 +12,7 @@ import org.luaj.vm2.lib.jse.JseOsLib;
 import turing.btatweaker.BTATweaker;
 import turing.btatweaker.api.IScriptExecutionPoint;
 import turing.btatweaker.api.IScriptableEvent;
-import turing.btatweaker.impl.ExecutionPointAfterGameStart;
-import turing.btatweaker.impl.ExecutionPointBeforeGameStart;
-import turing.btatweaker.impl.ExecutionPointProcessRecipes;
-import turing.btatweaker.impl.ExecutionPointRegisterRecipes;
+import turing.btatweaker.impl.*;
 import turing.btatweaker.luapi.*;
 import turing.btatweaker.util.ScriptUtil;
 
@@ -33,6 +30,8 @@ public class ScriptManager {
     public static final ExecutionPointProcessRecipes PROCESS_RECIPES = new ExecutionPointProcessRecipes();
     public static final ExecutionPointBeforeGameStart BEFORE_GAME_START = new ExecutionPointBeforeGameStart();
     public static final ExecutionPointAfterGameStart AFTER_GAME_START = new ExecutionPointAfterGameStart();
+    public static final ExecutionPointBeforeClientStart BEFORE_CLIENT_START = new ExecutionPointBeforeClientStart();
+    public static final ExecutionPointAfterClientStart AFTER_CLIENT_START = new ExecutionPointAfterClientStart();
 
     public final List<String> toLog = new ArrayList<>();
 
