@@ -25,7 +25,7 @@ version = project.mod_version
 
 loom {
 	noIntermediateMappings()
-	if (project.bta_version == "7.3-pre3") {
+	if (project.bta_version.contains("7.3")) {
 		customMinecraftMetadata.set("https://github.com/Turnip-Labs/bta-manifest-repo/releases/download/v${project.bta_version}/${project.bta_version}.json")
 	} else {
 		gluedMinecraftJar()
@@ -115,7 +115,7 @@ dependencies {
 	mappings loom.layered() {}
 
 	modRuntimeOnly "objects:client:43db9b498cb67058d2e12d394e6507722e71bb45" // https://piston-data.mojang.com/v1/objects/43db9b498cb67058d2e12d394e6507722e71bb45/client.jar
-	if (project.bta_version == "7.3-pre3") {
+	if (project.bta_version.contains("7.3")) {
 		modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 	} else {
 		modImplementation "fabric-loader:fabric-loader:0.15.6-babric.6-bta"
@@ -123,7 +123,7 @@ dependencies {
 
 	// Helper library
 	// If you do not need Halplibe you can comment this line out or delete this line
-	if (project.bta_version == "7.3-pre3") {
+	if (project.bta_version.contains("7.3")) {
 		implementation("turniplabs:halplibe:${project.halplibe_version}")
 		modImplementation("turniplabs:modmenu-bta:${project.mod_menu_version}")
 	} else {
@@ -145,7 +145,7 @@ dependencies {
 
 	include(implementation("org.apache.commons:commons-lang3:3.12.0"))
 
-	if (project.bta_version == "7.3-pre3") {
+	if (project.bta_version.contains("7.3")) {
 		modImplementation("com.github.zarzelcow:legacy-lwjgl3:1.0.4")
 		implementation platform("org.lwjgl:lwjgl-bom:$lwjglVersion")
 
@@ -182,7 +182,7 @@ jar {
 
 configurations.configureEach {
 	// Removes LWJGL2 dependencies
-	if (project.bta_version == "7.3-pre3") {
+	if (project.bta_version.contains("7.3")) {
 		exclude group: "org.lwjgl.lwjgl"
 	}
 }
