@@ -1,9 +1,13 @@
 package turing.btatweaker;
 
-import turing.btatweaker.lua.LibGatherer;
+import turing.btatweaker.lua.ScriptGlobals;
 
 public interface BTATweakerEntrypoint {
-    void addLibs(LibGatherer gatherer);
+    default void addGlobals(ScriptGlobals globals) {
 
-    void init(IScriptPropertyHolder registry);
+    }
+
+    default void init(IBTATweaker registry) {
+
+    }
 }

@@ -11,7 +11,7 @@ import turing.btatweaker.api.IScriptPreprocessor;
 import turing.btatweaker.api.IScriptableEvent;
 import turing.btatweaker.api.ModLibrary;
 import turing.btatweaker.impl.ExecutionPointPreprocessor;
-import turing.btatweaker.lua.LibGatherer;
+import turing.btatweaker.lua.ScriptGlobals;
 import turing.btatweaker.lua.ScriptManager;
 import turniplabs.halplibe.util.ClientStartEntrypoint;
 import turniplabs.halplibe.util.GameStartEntrypoint;
@@ -20,7 +20,7 @@ import turniplabs.halplibe.util.RecipeEntrypoint;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BTATweaker implements ModInitializer, GameStartEntrypoint, RecipeEntrypoint, ClientStartEntrypoint, IScriptPropertyHolder {
+public class BTATweaker implements ModInitializer, GameStartEntrypoint, RecipeEntrypoint, ClientStartEntrypoint, IBTATweaker {
     public static final String MOD_ID = "btatweaker";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
     public static final RecipeNamespace namespace = new RecipeNamespace();
@@ -32,9 +32,9 @@ public class BTATweaker implements ModInitializer, GameStartEntrypoint, RecipeEn
 
     @Override
     public void onInitialize() {
-        LibGatherer gatherer = new LibGatherer();
+        ScriptGlobals gatherer = new ScriptGlobals();
         FabricLoader.getInstance().getEntrypoints("btatweakerPlugin", BTATweakerEntrypoint.class).forEach((plugin) -> {
-            plugin.addLibs(gatherer);
+            plugin.addGlobals(gatherer);
             plugin.init(this);
         });
         ScriptManager.initGlobals(gatherer);

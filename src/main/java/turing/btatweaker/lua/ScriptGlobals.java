@@ -6,10 +6,10 @@ import org.luaj.vm2.LuaValue;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LibGatherer {
+public class ScriptGlobals {
     private final List<LuaValue> libs = new ArrayList<>();
 
-    public void addLib(LuaValue lib) {
+    public void addGlobalLib(LuaValue lib) {
         libs.add(lib);
     }
 

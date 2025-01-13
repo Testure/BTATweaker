@@ -56,7 +56,7 @@ public class ScriptManager {
         throw new NullPointerException("Could not find event with name '" + eventName + "'!");
     }
 
-    public static void initGlobals(LibGatherer gatherer) {
+    public static void initGlobals(ScriptGlobals gatherer) {
         GLOBALS.load(new JseBaseLib());
         GLOBALS.load(new PackageLib());
         GLOBALS.load(new Bit32Lib());
