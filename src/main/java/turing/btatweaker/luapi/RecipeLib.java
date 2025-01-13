@@ -1,5 +1,6 @@
 package turing.btatweaker.luapi;
 
+import net.minecraft.core.data.registry.Registries;
 import net.minecraft.core.data.registry.recipe.RecipeSymbol;
 import net.minecraft.core.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
@@ -64,6 +65,33 @@ public class RecipeLib extends TwoArgFunction {
                 return new RecipeSymbol(((ItemGroupIngredient) value).itemGroup, ((IIngredient) value).getAmount());
             } else {
                 return new RecipeSymbol(((IIngredient) value).resolve(), ((IIngredient) value).getAmount());
+            }
+        }
+        if (value.istable()) {
+            List<ItemStack> stacks = new ArrayList<>();
+            LuaTable t = value.checktable();
+            Varargs pair = t.next(LuaValue.NIL);
+
+            while (pair != NIL) {
+                LuaValue key = pair.arg(1);
+                LuaValue v = pair.arg(2);
+
+                if (v.istable() && v instanceof LuaItem) {
+                    stacks.add(((LuaItem) v).getDefaultStack());
+                } else if (v.istable() && v instanceof ItemGroupIngredient) {
+                    stacks.addAll(((ItemGroupIngredient) v).resolve());
+                } else if (v.isstring()) {
+                    String s = v.checkjstring();
+                    if (Registries.ITEM_GROUPS.getItem(s) != null) {
+                        stacks.addAll(Registries.ITEM_GROUPS.getItem(s));
+                    }
+                }
+
+                pair = t.next(key);
+            }
+
+            if (!stacks.isEmpty()) {
+                return new RecipeSymbol(stacks);
             }
         }
         return null;

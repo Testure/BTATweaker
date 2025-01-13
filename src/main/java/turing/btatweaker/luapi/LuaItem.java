@@ -24,6 +24,14 @@ public class LuaItem extends LuaClass implements IItemConvertible, IIngredient {
 
         rawset("WithMetadata", new WithMetadata());
         rawset("GetTranslationKey", new GetTranslationKey());
+        rawset("WithTag", new WithTag());
+        rawset("HasData", new OneArgFunction() {
+            @Override
+            public LuaValue call(LuaValue self) {
+                return LuaValue.valueOf(self.get("Tag") != NIL);
+            }
+        });
+
         rawset("Amount", stack.stackSize);
         rawset("Id", realItem.id);
         /*removed until 7.2 is no longer supported
@@ -32,11 +40,7 @@ public class LuaItem extends LuaClass implements IItemConvertible, IIngredient {
         rawset("RegistryName", realItem.namespaceID.toString());*/
         rawset("TranslationKey", realItem.getKey());
         rawset("Metadata", stack.getMetadata());
-    }
-
-    @Override
-    public TwoArgFunction getAddFunction() {
-        return new MulFunction();
+        rawset("Tag", new LuaTag(stack.getData(), stack::setData));
     }
 
     @Override
@@ -72,6 +76,11 @@ public class LuaItem extends LuaClass implements IItemConvertible, IIngredient {
     @Override
     public OneArgFunction getLenFunction() {
         return new LenFunction();
+    }
+
+    @Override
+    public OneArgFunction getToStringFunction() {
+        return new ToStringFunction();
     }
 
     public LuaItem(Item item) {
@@ -117,6 +126,21 @@ public class LuaItem extends LuaClass implements IItemConvertible, IIngredient {
     @Override
     public List<ItemStack> resolve() {
         return Collections.singletonList(stack);
+    }
+
+    protected static final class WithTag extends TwoArgFunction {
+        @Override
+        public LuaValue call(LuaValue self, LuaValue tag) {
+            LuaTag luaTag;
+            if (tag instanceof LuaTag) {
+                luaTag = (LuaTag) tag;
+            } else {
+                luaTag = LuaTag.getLuaTagFromTable(tag);
+            }
+            ((LuaItem) self).stack.setData(luaTag.getRealTag());
+            self.rawset("Tag", luaTag);
+            return self;
+        }
     }
 
     protected static final class WithMetadata extends TwoArgFunction {
@@ -206,6 +230,13 @@ public class LuaItem extends LuaClass implements IItemConvertible, IIngredient {
         @Override
         public LuaValue call(LuaValue self) {
             return self.rawget("Amount");
+        }
+    }
+
+    protected final class ToStringFunction extends OneArgFunction {
+        @Override
+        public LuaValue call(LuaValue self) {
+            return LuaValue.valueOf(stack.toString() + " [" + stack.getData() + "]");
         }
     }
 }
