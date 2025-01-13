@@ -2,8 +2,8 @@ package turing.btatweaker.luapi;
 
 import net.minecraft.core.data.registry.Registries;
 import net.minecraft.core.item.ItemStack;
-import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.lib.TwoArgFunction;
+import turing.btatweaker.util.LuaFunctionFactory;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -40,15 +40,8 @@ public class ItemGroupIngredient extends LuaClass implements IIngredient {
 
     @Override
     public TwoArgFunction getMulFunction() {
-        return new MulFunction();
-    }
-
-    protected final class MulFunction extends TwoArgFunction {
-        @Override
-        public LuaValue call(LuaValue self, LuaValue arg) {
-            amount = arg.checkint();
-            rawset("Amount", amount);
-            return self;
-        }
+        return LuaFunctionFactory.oneArgBuilderMethod((self, arg) ->
+                rawset("Amount", arg.checkint())
+        );
     }
 }

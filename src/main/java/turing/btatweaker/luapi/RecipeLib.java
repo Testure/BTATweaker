@@ -11,6 +11,7 @@ import org.luaj.vm2.Varargs;
 import org.luaj.vm2.lib.OneArgFunction;
 import org.luaj.vm2.lib.TwoArgFunction;
 import org.luaj.vm2.lib.VarArgFunction;
+import turing.btatweaker.util.LuaFunctionFactory;
 import turniplabs.halplibe.helper.RecipeBuilder;
 
 import java.util.ArrayList;
@@ -20,17 +21,13 @@ public class RecipeLib extends TwoArgFunction {
     @Override
     public LuaValue call(LuaValue modname, LuaValue env) {
         LuaTable t = new LuaTable();
-        OneArgFunction groupFunction = new OneArgFunction() {
-            @Override
-            public LuaValue call(LuaValue arg) {
-                return new ItemGroupIngredient(arg.checkjstring());
-            }
-        };
+        OneArgFunction groupFunction = LuaFunctionFactory.oneArgFunction((groupName) ->
+                new ItemGroupIngredient(groupName.checkjstring())
+        );
 
         t.set("addItemsToGroup", new AddItemsToGroup());
         t.set("getItemsInGroup", new GetItemsInGroup());
         t.set("removeItemsFromGroup", new RemoveItemsFromGroup());
-        t.set("addJsonRecipe", new AddJsonRecipe());
         t.set("Workbench", new WorkbenchLib());
         t.set("CraftingTable", t.get("Workbench"));
         t.set("Furnace", new FurnaceLib());
@@ -47,9 +44,11 @@ public class RecipeLib extends TwoArgFunction {
 
     public static RecipeSymbol recipeSymbolFromLua(LuaValue value) {
         RecipeSymbol symbol = recipeSymbolFromLuaSilent(value);
+
         if (symbol == null) {
             throw new IllegalStateException("Could not convert lua value to a RecipeSymbol!");
         }
+
         return symbol;
     }
 
@@ -58,6 +57,7 @@ public class RecipeLib extends TwoArgFunction {
         if (value.isstring()) {
             return new RecipeSymbol(value.checkjstring());
         }
+
         if (value.istable() && value instanceof IIngredient) {
             if (value instanceof LuaItem) {
                 return new RecipeSymbol(((LuaItem) value).getDefaultStack(), ((IIngredient) value).getAmount());
@@ -67,6 +67,7 @@ public class RecipeLib extends TwoArgFunction {
                 return new RecipeSymbol(((IIngredient) value).resolve(), ((IIngredient) value).getAmount());
             }
         }
+
         if (value.istable()) {
             List<ItemStack> stacks = new ArrayList<>();
             LuaTable t = value.checktable();
@@ -94,14 +95,8 @@ public class RecipeLib extends TwoArgFunction {
                 return new RecipeSymbol(stacks);
             }
         }
-        return null;
-    }
 
-    protected static final class AddJsonRecipe extends OneArgFunction {
-        @Override
-        public LuaValue call(LuaValue arg) {
-            throw new LuaError("Unimplemented method.");
-        }
+        return null;
     }
 
     protected static final class GetItemsInGroup extends TwoArgFunction {
@@ -127,23 +122,28 @@ public class RecipeLib extends TwoArgFunction {
         public LuaValue invoke(Varargs args) {
             String modId = args.checkjstring(1);
             String key = args.checkjstring(2);
+
             LuaTable firstItem = args.checktable(3);
             if (firstItem instanceof LuaItem) {
                 List<LuaItem> items = new ArrayList<>();
                 items.add((LuaItem) firstItem);
+
                 Varargs extra = args.subargs(4);
+
                 for (int i = 1; i <= extra.narg(); i++) {
                     LuaTable t = extra.checktable(i);
                     if (t instanceof LuaItem) {
                         items.add((LuaItem) t);
                     }
                 }
+
                 for (LuaItem item : items) {
                     RecipeBuilder.getItemGroup(modId, key).removeIf(item::isItemEqual);
                 }
             } else {
                 throw new LuaError("3rd argument of removeItemsFromGroup must be an Item.");
             }
+
             return NIL;
         }
     }
@@ -153,21 +153,26 @@ public class RecipeLib extends TwoArgFunction {
         public LuaValue invoke(Varargs args) {
             String modId = args.checkjstring(1);
             String key = args.checkjstring(2);
+
             LuaTable firstItem = args.checktable(3);
             if (firstItem instanceof LuaItem) {
                 List<LuaItem> items = new ArrayList<>();
                 items.add((LuaItem) firstItem);
+
                 Varargs extra = args.subargs(4);
+
                 for (int i = 1; i <= extra.narg(); i++) {
                     LuaTable t = extra.checktable(i);
                     if (t instanceof LuaItem) {
                         items.add((LuaItem) t);
                     }
                 }
+
                 RecipeBuilder.addItemsToGroup(modId, key, items.toArray());
             } else {
                 throw new LuaError("3rd argument of addItemsToGroup must be an Item.");
             }
+
             return NIL;
         }
     }

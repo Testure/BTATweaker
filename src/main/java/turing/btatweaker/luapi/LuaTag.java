@@ -9,6 +9,7 @@ import org.luaj.vm2.Varargs;
 import org.luaj.vm2.lib.OneArgFunction;
 import org.luaj.vm2.lib.ThreeArgFunction;
 import org.luaj.vm2.lib.TwoArgFunction;
+import turing.btatweaker.util.LuaFunctionFactory;
 
 import java.util.function.Consumer;
 
@@ -199,13 +200,9 @@ public class LuaTag extends LuaClass {
             }
         });
 
-        rawset("ContainsKey", new TwoArgFunction() {
-            @Override
-            public LuaValue call(LuaValue self, LuaValue key) {
-                String keyName = key.checkjstring();
-                return LuaValue.valueOf(tag.containsKey(keyName));
-            }
-        });
+        rawset("ContainsKey", LuaFunctionFactory.oneArgMethod((self, key) ->
+                LuaValue.valueOf(tag.containsKey(key.checkjstring())))
+        );
     }
 
     public LuaTag(CompoundTag tag) {
@@ -222,22 +219,16 @@ public class LuaTag extends LuaClass {
 
     @Override
     public OneArgFunction getLenFunction() {
-        return new OneArgFunction() {
-            @Override
-            public LuaValue call(LuaValue self) {
-                return LuaValue.valueOf(getRealTag().getValues().size());
-            }
-        };
+        return LuaFunctionFactory.zeroArgMethod((self) ->
+                LuaValue.valueOf(getRealTag().getValues().size())
+        );
     }
 
     @Override
     public OneArgFunction getToStringFunction() {
-        return new OneArgFunction() {
-            @Override
-            public LuaValue call(LuaValue self) {
-                return LuaValue.valueOf(getRealTag().toString());
-            }
-        };
+        return LuaFunctionFactory.zeroArgMethod((self) ->
+                LuaValue.valueOf(getRealTag().toString())
+        );
     }
 
     public static LuaTag getLuaTagFromTable(LuaValue table) {

@@ -7,7 +7,7 @@ public interface BTATweakerEntrypoint {
 
     }
 
-    default void init(IBTATweaker registry) {
+    default void initPlugin(IBTATweaker registry) {
 
     }
 }

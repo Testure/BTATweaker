@@ -18,5 +18,5 @@ public abstract class ModLibrary extends TwoArgFunction {
 
     public abstract void setupLib(LuaTable libraryTable, LuaValue env);
 
-    public abstract List<String> getValidNames();
+    public abstract List<String> getAliases();
 }

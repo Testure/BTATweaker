@@ -3,16 +3,19 @@ package turing.btatweaker.luapi;
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
-import org.luaj.vm2.lib.TwoArgFunction;
 import org.luaj.vm2.lib.VarArgFunction;
 import turing.btatweaker.BTATweaker;
+import turing.btatweaker.util.LuaFunctionFactory;
 import turniplabs.halplibe.helper.RecipeBuilder;
 import turniplabs.halplibe.helper.recipeBuilders.RecipeBuilderFurnace;
 
 public class FurnaceLib extends LuaClass {
     public FurnaceLib() {
         super();
-        rawset("removeRecipe", new RemoveRecipe());
+        rawset("removeRecipe", LuaFunctionFactory.twoArgFunction((arg, arg2) -> {
+            removeRecipe(arg.checkjstring(), arg2.checkjstring());
+            return NIL;
+        }));
         rawset("addRecipe", new AddRecipe());
     }
 
@@ -40,14 +43,6 @@ public class FurnaceLib extends LuaClass {
 
             builder.create(recipeId, ((LuaItem) output).getDefaultStack());
 
-            return NIL;
-        }
-    }
-
-    protected final class RemoveRecipe extends TwoArgFunction {
-        @Override
-        public LuaValue call(LuaValue arg, LuaValue arg2) {
-            removeRecipe(arg.checkjstring(), arg2.checkjstring());
             return NIL;
         }
     }

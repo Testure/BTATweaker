@@ -3,10 +3,10 @@ package turing.btatweaker.luapi;
 import net.minecraft.core.item.IItemConvertible;
 import net.minecraft.core.item.Item;
 import net.minecraft.core.item.ItemStack;
-import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.lib.OneArgFunction;
 import org.luaj.vm2.lib.TwoArgFunction;
+import turing.btatweaker.util.LuaFunctionFactory;
 
 import java.util.Collections;
 import java.util.List;
@@ -22,15 +22,21 @@ public class LuaItem extends LuaClass implements IItemConvertible, IIngredient {
         this.realItem = item.getItem();
         this.stack = item;
 
-        rawset("WithMetadata", new WithMetadata());
-        rawset("GetTranslationKey", new GetTranslationKey());
+        rawset("WithMetadata", LuaFunctionFactory.oneArgBuilderMethod((self, arg) -> {
+            int metadata = arg.checkint();
+
+            self.rawset("Metadata", metadata);
+            ((LuaItem) self).stack.setMetadata(metadata);
+        }));
+        rawset("GetTranslationKey", LuaFunctionFactory.zeroArgMethod((self) -> {
+            LuaItem luaItem = (LuaItem) self;
+
+            return LuaValue.valueOf(luaItem.realItem.getLanguageKey(luaItem.stack));
+        }));
         rawset("WithTag", new WithTag());
-        rawset("HasData", new OneArgFunction() {
-            @Override
-            public LuaValue call(LuaValue self) {
-                return LuaValue.valueOf(self.get("Tag") != NIL);
-            }
-        });
+        rawset("HasData", LuaFunctionFactory.zeroArgMethod((self) ->
+                LuaValue.valueOf(self.get("Tag") != NIL)
+        ));
 
         rawset("Amount", stack.stackSize);
         rawset("Id", realItem.id);
@@ -43,48 +49,43 @@ public class LuaItem extends LuaClass implements IItemConvertible, IIngredient {
         rawset("Tag", new LuaTag(stack.getData(), stack::setData));
     }
 
+    public LuaItem(Item item) {
+        this(item.getDefaultStack());
+    }
+
     @Override
     public TwoArgFunction getMulFunction() {
-        return new MulFunction();
+        return LuaFunctionFactory.oneArgBuilderMethod((self, arg) -> {
+            int amount = arg.checkint();
+
+            self.rawset("Amount", amount);
+            ((LuaItem) self).stack.stackSize = amount;
+        });
     }
 
     @Override
     public TwoArgFunction getEqualFunction() {
-        return new EqualFunction();
-    }
-
-    @Override
-    public TwoArgFunction getGreaterThanEqualFunction() {
-        return new LessThanEqualFunction(true);
-    }
-
-    @Override
-    public TwoArgFunction getGreaterThanFunction() {
-        return new LessThanFunction(true);
-    }
-
-    @Override
-    public TwoArgFunction getLessThanEqualFunction() {
-        return new LessThanEqualFunction(false);
-    }
-
-    @Override
-    public TwoArgFunction getLessThanFunction() {
-        return new LessThanFunction(false);
+        return LuaFunctionFactory.oneArgMethod((self, arg) -> {
+            if (arg.istable() && arg instanceof LuaItem) {
+                LuaItem other = (LuaItem) arg;
+                return LuaValue.valueOf(other.getStack().isStackEqual(((LuaItem) self).getStack()));
+            }
+            return FALSE;
+        });
     }
 
     @Override
     public OneArgFunction getLenFunction() {
-        return new LenFunction();
+        return LuaFunctionFactory.zeroArgMethod((self) ->
+                self.rawget("Amount")
+        );
     }
 
     @Override
     public OneArgFunction getToStringFunction() {
-        return new ToStringFunction();
-    }
-
-    public LuaItem(Item item) {
-        this(item.getDefaultStack());
+        return LuaFunctionFactory.zeroArgMethod((self) ->
+                LuaValue.valueOf(stack.toString() + " [" + stack.getData() + "]")
+        );
     }
 
     public static boolean isLuaItem(LuaValue value) {
@@ -93,6 +94,10 @@ public class LuaItem extends LuaClass implements IItemConvertible, IIngredient {
 
     public boolean isItemEqual(ItemStack other) {
         return other.isItemEqual(stack);
+    }
+
+    public ItemStack getStack() {
+        return stack;
     }
 
     @Override
@@ -115,7 +120,7 @@ public class LuaItem extends LuaClass implements IItemConvertible, IIngredient {
 
     @Override
     public ItemStack getDefaultStack() {
-        return stack;
+        return getStack();
     }
 
     @Override
@@ -132,111 +137,17 @@ public class LuaItem extends LuaClass implements IItemConvertible, IIngredient {
         @Override
         public LuaValue call(LuaValue self, LuaValue tag) {
             LuaTag luaTag;
+
             if (tag instanceof LuaTag) {
                 luaTag = (LuaTag) tag;
             } else {
                 luaTag = LuaTag.getLuaTagFromTable(tag);
             }
+
             ((LuaItem) self).stack.setData(luaTag.getRealTag());
             self.rawset("Tag", luaTag);
+
             return self;
-        }
-    }
-
-    protected static final class WithMetadata extends TwoArgFunction {
-        @Override
-        public LuaValue call(LuaValue self, LuaValue arg) {
-            int metadata = arg.checkint();
-            self.rawset("Metadata", metadata);
-            ((LuaItem) self).stack.setMetadata(metadata);
-            return self;
-        }
-    }
-
-    protected static final class GetTranslationKey extends OneArgFunction {
-        @Override
-        public LuaValue call(LuaValue self) {
-            LuaItem luaItem = (LuaItem) self;
-            return LuaValue.valueOf(luaItem.realItem.getLanguageKey(luaItem.stack));
-        }
-    }
-
-    protected static final class MulFunction extends TwoArgFunction {
-        @Override
-        public LuaValue call(LuaValue self, LuaValue arg) {
-            int amount = arg.checkint();
-            self.rawset("Amount", amount);
-            ((LuaItem) self).stack.stackSize = amount;
-            return self;
-        }
-    }
-
-    protected static class EqualFunction extends TwoArgFunction {
-        public LuaValue baseCall(LuaValue self, LuaValue arg) {
-            if (arg.istable() && arg instanceof LuaItem) {
-                LuaItem other = (LuaItem) arg;
-                return LuaValue.valueOf(other.equals(self));
-            }
-            return FALSE;
-        }
-
-        @Override
-        public LuaValue call(LuaValue self, LuaValue arg) {
-            LuaValue baseValue = baseCall(self, arg);
-            if (baseValue.checkboolean()) {
-                return LuaValue.valueOf(self.rawget("Amount").checkint() == arg.rawget("Amount").checkint());
-            }
-            return baseValue;
-        }
-    }
-
-    protected static final class LessThanFunction extends EqualFunction {
-        private final boolean inverse;
-
-        public LessThanFunction(boolean inverse) {
-            this.inverse = inverse;
-        }
-
-        @Override
-        public LuaValue call(LuaValue self, LuaValue arg) {
-            LuaValue baseValue = baseCall(self, arg);
-            if (baseValue.checkboolean()) {
-                boolean v = self.rawget("Amount").checkint() < arg.rawget("Amount").checkint();
-                return LuaValue.valueOf(inverse != v);
-            }
-            return baseValue;
-        }
-    }
-
-    protected static final class LessThanEqualFunction extends EqualFunction {
-        private final boolean inverse;
-
-        public LessThanEqualFunction(boolean inverse) {
-            this.inverse = inverse;
-        }
-
-        @Override
-        public LuaValue call(LuaValue self, LuaValue arg) {
-            LuaValue baseValue = baseCall(self, arg);
-            if (baseValue.checkboolean()) {
-                boolean v = self.rawget("Amount").checkint() <= arg.rawget("Amount").checkint();
-                return LuaValue.valueOf(inverse != v);
-            }
-            return baseValue;
-        }
-    }
-
-    protected static final class LenFunction extends OneArgFunction {
-        @Override
-        public LuaValue call(LuaValue self) {
-            return self.rawget("Amount");
-        }
-    }
-
-    protected final class ToStringFunction extends OneArgFunction {
-        @Override
-        public LuaValue call(LuaValue self) {
-            return LuaValue.valueOf(stack.toString() + " [" + stack.getData() + "]");
         }
     }
 }

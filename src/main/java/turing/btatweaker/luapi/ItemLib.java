@@ -12,8 +12,10 @@ public class ItemLib extends TwoArgFunction {
     @Override
     public LuaValue call(LuaValue modname, LuaValue env) {
         ItemFunc itemFunction = new ItemFunc();
+
         env.set("item", itemFunction);
         env.get("package").get("loaded").set("item", itemFunction);
+
         return itemFunction;
     }
 

@@ -1,13 +1,8 @@
 package turing.btatweaker.impl;
 
-import turing.btatweaker.BTATweaker;
 import turing.btatweaker.api.IScriptExecutionPoint;
 
 public class ExecutionPointBeforeClientStart implements IScriptExecutionPoint {
-    public ExecutionPointBeforeClientStart() {
-        BTATweaker.executionPoints.add(this);
-    }
-
     @Override
     public String getName() {
         return "beforeClientStart";

@@ -7,7 +7,7 @@ import org.luaj.vm2.lib.OneArgFunction;
 import org.luaj.vm2.lib.TwoArgFunction;
 import turing.btatweaker.BTATweaker;
 import turing.btatweaker.api.IScriptableEvent;
-import turing.btatweaker.lua.ScriptManager;
+import turing.btatweaker.lua.EventHandler;
 
 public class EventLib extends TwoArgFunction {
     @Override
@@ -40,7 +40,7 @@ public class EventLib extends TwoArgFunction {
         public LuaValue call(LuaValue eventName, LuaValue function) {
             LuaFunction callback = function.checkfunction();
             String name = eventName.checkjstring();
-            return ScriptManager.connectToEvent(callback, name).getRight();
+            return EventHandler.connectToEvent(callback, name).getRight();
         }
     }
 }

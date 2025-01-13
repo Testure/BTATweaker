@@ -10,9 +10,10 @@ import turing.btatweaker.api.IScriptExecutionPoint;
 import turing.btatweaker.api.IScriptPreprocessor;
 import turing.btatweaker.api.IScriptableEvent;
 import turing.btatweaker.api.ModLibrary;
-import turing.btatweaker.impl.ExecutionPointPreprocessor;
+import turing.btatweaker.impl.*;
 import turing.btatweaker.lua.ScriptGlobals;
 import turing.btatweaker.lua.ScriptManager;
+import turing.btatweaker.luapi.*;
 import turniplabs.halplibe.util.ClientStartEntrypoint;
 import turniplabs.halplibe.util.GameStartEntrypoint;
 import turniplabs.halplibe.util.RecipeEntrypoint;
@@ -20,7 +21,7 @@ import turniplabs.halplibe.util.RecipeEntrypoint;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BTATweaker implements ModInitializer, GameStartEntrypoint, RecipeEntrypoint, ClientStartEntrypoint, IBTATweaker {
+public class BTATweaker implements ModInitializer, GameStartEntrypoint, RecipeEntrypoint, ClientStartEntrypoint, IBTATweaker, BTATweakerEntrypoint {
     public static final String MOD_ID = "btatweaker";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
     public static final RecipeNamespace namespace = new RecipeNamespace();
@@ -30,12 +31,19 @@ public class BTATweaker implements ModInitializer, GameStartEntrypoint, RecipeEn
     public static final List<IScriptableEvent> events = new ArrayList<>();
     public static final ScriptManager manager = new ScriptManager();
 
+    public static final ExecutionPointRegisterRecipes REGISTER_RECIPES = new ExecutionPointRegisterRecipes();
+    public static final ExecutionPointProcessRecipes PROCESS_RECIPES = new ExecutionPointProcessRecipes();
+    public static final ExecutionPointBeforeGameStart BEFORE_GAME_START = new ExecutionPointBeforeGameStart();
+    public static final ExecutionPointAfterGameStart AFTER_GAME_START = new ExecutionPointAfterGameStart();
+    public static final ExecutionPointBeforeClientStart BEFORE_CLIENT_START = new ExecutionPointBeforeClientStart();
+    public static final ExecutionPointAfterClientStart AFTER_CLIENT_START = new ExecutionPointAfterClientStart();
+
     @Override
     public void onInitialize() {
         ScriptGlobals gatherer = new ScriptGlobals();
         FabricLoader.getInstance().getEntrypoints("btatweakerPlugin", BTATweakerEntrypoint.class).forEach((plugin) -> {
             plugin.addGlobals(gatherer);
-            plugin.init(this);
+            plugin.initPlugin(this);
         });
         ScriptManager.initGlobals(gatherer);
         for (IScriptExecutionPoint executionPoint : executionPoints) {
@@ -55,6 +63,25 @@ public class BTATweaker implements ModInitializer, GameStartEntrypoint, RecipeEn
                 manager.executeScripts(executionPoint);
             }
         }
+    }
+
+    @Override
+    public void addGlobals(ScriptGlobals globals) {
+        globals.addGlobalLib(new UtilLib());
+        globals.addGlobalLib(new ModLib());
+        globals.addGlobalLib(new ItemLib());
+        globals.addGlobalLib(new RecipeLib());
+        globals.addGlobalLib(new EventLib());
+    }
+
+    @Override
+    public void initPlugin(IBTATweaker registry) {
+        registry.addExecutionPoint(REGISTER_RECIPES);
+        registry.addExecutionPoint(PROCESS_RECIPES);
+        registry.addExecutionPoint(BEFORE_GAME_START);
+        registry.addExecutionPoint(BEFORE_CLIENT_START);
+        registry.addExecutionPoint(AFTER_GAME_START);
+        registry.addExecutionPoint(AFTER_CLIENT_START);
     }
 
     @Override
@@ -79,27 +106,27 @@ public class BTATweaker implements ModInitializer, GameStartEntrypoint, RecipeEn
 
     @Override
     public void beforeGameStart() {
-        manager.executeScripts(ScriptManager.BEFORE_GAME_START);
+        manager.executeScripts(BEFORE_GAME_START);
     }
 
     @Override
     public void afterGameStart() {
-        manager.executeScripts(ScriptManager.AFTER_GAME_START);
+        manager.executeScripts(AFTER_GAME_START);
     }
 
     @Override
     public void beforeClientStart() {
-        manager.executeScripts(ScriptManager.BEFORE_CLIENT_START);
+        manager.executeScripts(BEFORE_CLIENT_START);
     }
 
     @Override
     public void afterClientStart() {
-        manager.executeScripts(ScriptManager.AFTER_CLIENT_START);
+        manager.executeScripts(AFTER_CLIENT_START);
     }
 
     @Override
     public void onRecipesReady() {
-        manager.executeScripts(ScriptManager.REGISTER_RECIPES);
+        manager.executeScripts(REGISTER_RECIPES);
     }
 
     @Override

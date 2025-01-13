@@ -31,6 +31,9 @@
     ],
     "recipesReady": [
       "turing.btatweaker.BTATweaker"
+    ],
+    "btatweakerPlugin": [
+      "turing.btatweaker.BTATweaker"
     ]
   },
   "mixins": [

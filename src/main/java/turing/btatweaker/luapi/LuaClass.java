@@ -5,6 +5,7 @@ import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.lib.OneArgFunction;
 import org.luaj.vm2.lib.ThreeArgFunction;
 import org.luaj.vm2.lib.TwoArgFunction;
+import turing.btatweaker.util.LuaFunctionFactory;
 
 public class LuaClass extends LuaTable {
     public LuaClass() {
@@ -74,7 +75,7 @@ public class LuaClass extends LuaTable {
     }
 
     public ThreeArgFunction getNewIndexFunction() {
-        return new SetFunction();
+        return LuaFunctionFactory.twoArgMethod((self, a1, a2) -> self);
     }
 
     public OneArgFunction getToStringFunction() {
@@ -95,12 +96,5 @@ public class LuaClass extends LuaTable {
 
     public TwoArgFunction getPowFunction() {
         return null;
-    }
-
-    protected static final class SetFunction extends ThreeArgFunction {
-        @Override
-        public LuaValue call(LuaValue self, LuaValue arg, LuaValue arg2) {
-            return self;
-        }
     }
 }

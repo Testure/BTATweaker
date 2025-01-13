@@ -1,7 +1,6 @@
 package turing.btatweaker.lua;
 
 import net.minecraft.core.net.command.TextFormatting;
-import net.minecraft.core.util.collection.Pair;
 import net.minecraft.core.world.World;
 import org.luaj.vm2.*;
 import org.luaj.vm2.compiler.LuaC;
@@ -11,50 +10,17 @@ import org.luaj.vm2.lib.jse.JseMathLib;
 import org.luaj.vm2.lib.jse.JseOsLib;
 import turing.btatweaker.BTATweaker;
 import turing.btatweaker.api.IScriptExecutionPoint;
-import turing.btatweaker.api.IScriptableEvent;
-import turing.btatweaker.impl.*;
-import turing.btatweaker.luapi.*;
 import turing.btatweaker.util.ScriptUtil;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 
 public class ScriptManager {
     public static final List<LuaScript> SCRIPTS = new ArrayList<>();
-    public static final List<EventConnection> EVENT_CONNECTIONS = new ArrayList<>();
     public static final Globals GLOBALS = new Globals();
-    public static final ExecutionPointRegisterRecipes REGISTER_RECIPES = new ExecutionPointRegisterRecipes();
-    public static final ExecutionPointProcessRecipes PROCESS_RECIPES = new ExecutionPointProcessRecipes();
-    public static final ExecutionPointBeforeGameStart BEFORE_GAME_START = new ExecutionPointBeforeGameStart();
-    public static final ExecutionPointAfterGameStart AFTER_GAME_START = new ExecutionPointAfterGameStart();
-    public static final ExecutionPointBeforeClientStart BEFORE_CLIENT_START = new ExecutionPointBeforeClientStart();
-    public static final ExecutionPointAfterClientStart AFTER_CLIENT_START = new ExecutionPointAfterClientStart();
 
     public final List<String> toLog = new ArrayList<>();
-
-    public static Pair<EventConnection, LuaEventConnection> connectToEvent(LuaFunction function, String eventName) {
-        Optional<IScriptableEvent> event = BTATweaker.events.stream().filter((e) -> e.getName().equals(eventName)).findFirst();
-        if (event.isPresent()) {
-            UUID uuid = UUID.randomUUID();
-            EventConnection connection = new EventConnection(uuid, event.get(), function);
-            LuaEventConnection luaConnection = new LuaEventConnection(event.get(), uuid);
-            EVENT_CONNECTIONS.add(connection);
-            return Pair.of(connection, luaConnection);
-        }
-        throw new NullPointerException("Could not find event with name '" + eventName + "'!");
-    }
-
-    public static void fireEvent(String eventName, Varargs varargs) {
-        Optional<IScriptableEvent> event = BTATweaker.events.stream().filter((e) -> e.getName().equals(eventName)).findFirst();
-        if (event.isPresent()) {
-            event.get().fireEvent(varargs);
-            return;
-        }
-        throw new NullPointerException("Could not find event with name '" + eventName + "'!");
-    }
 
     public static void initGlobals(ScriptGlobals gatherer) {
         GLOBALS.load(new JseBaseLib());
@@ -65,11 +31,6 @@ public class ScriptManager {
         GLOBALS.load(new JseMathLib());
         GLOBALS.load(new CoroutineLib());
         GLOBALS.load(new JseOsLib());
-        GLOBALS.load(new ItemLib());
-        GLOBALS.load(new EventLib());
-        GLOBALS.load(new ModLib());
-        GLOBALS.load(new RecipeLib());
-        GLOBALS.load(new UtilLib());
 
         gatherer.load(GLOBALS);
 
@@ -79,13 +40,14 @@ public class ScriptManager {
 
     public void loadScripts(File dir) {
         SCRIPTS.clear();
-        EVENT_CONNECTIONS.clear();
+        EventHandler.EVENT_CONNECTIONS.clear();
         SCRIPTS.addAll(ScriptUtil.gatherScripts(dir, true));
 
         for (LuaScript script : SCRIPTS) {
             if (script.executionPoint == null) {
-                script.executionPoint = PROCESS_RECIPES;
+                script.executionPoint = BTATweaker.PROCESS_RECIPES;
             }
+
             script.preprocessors.addAll(ScriptUtil.gatherPreprocessors(script));
         }
     }
@@ -119,9 +81,13 @@ public class ScriptManager {
         if (toLog.isEmpty()) {
             toLog.add(TextFormatting.formatted("BTATweaker encountered script errors!", TextFormatting.RED));
         }
+
         StringBuilder builder = new StringBuilder(error.getMessage());
 
-        if (builder.indexOf("@") > -1) builder.deleteCharAt(builder.indexOf("@"));
+        if (builder.indexOf("@") > -1) {
+            builder.deleteCharAt(builder.indexOf("@"));
+        }
+
         String fullPath = ScriptUtil.getBaseDir().getAbsolutePath();
         int i = builder.indexOf(fullPath);
 
@@ -137,6 +103,7 @@ public class ScriptManager {
 
     public void log(World world) {
         if (toLog.isEmpty()) return;
+
         if (world == null) {
             for (String s : toLog) {
                 //removed until 7.2 is no longer supported
@@ -147,6 +114,7 @@ public class ScriptManager {
                 world.sendGlobalMessage(s);
             }
         }
+
         toLog.clear();
     }
 
