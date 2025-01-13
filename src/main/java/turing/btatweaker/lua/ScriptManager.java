@@ -69,6 +69,7 @@ public class ScriptManager {
         GLOBALS.load(new EventLib());
         GLOBALS.load(new ModLib());
         GLOBALS.load(new RecipeLib());
+        GLOBALS.load(new UtilLib());
 
         gatherer.load(GLOBALS);
 
