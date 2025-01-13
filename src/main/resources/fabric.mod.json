@@ -8,9 +8,9 @@
     "Turing6"
   ],
   "contact": {
-    "homepage": "",
-    "sources": ""
+    "issues": "https://github.com/Testure/BTATweaker/issues"
   },
+  "icon": "icon.png",
   "license": "GPL-3.0",
   "environment": "*",
   "entrypoints": {
