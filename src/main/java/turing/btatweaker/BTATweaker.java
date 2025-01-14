@@ -80,6 +80,7 @@ public class BTATweaker implements ModInitializer, GameStartEntrypoint, RecipeEn
         registry.addExecutionPoint(BEFORE_CLIENT_START);
         registry.addExecutionPoint(AFTER_GAME_START);
         registry.addExecutionPoint(AFTER_CLIENT_START);
+        registry.addExecutionPoint(new ExecutionPointNever());
     }
 
     @Override
