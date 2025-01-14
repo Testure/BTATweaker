@@ -1,5 +1,7 @@
 package turing.btatweaker.luapi;
 
+import com.google.gson.JsonArray;
+import net.minecraft.core.data.DataLoader;
 import net.minecraft.core.data.registry.Registries;
 import net.minecraft.core.data.registry.recipe.RecipeSymbol;
 import net.minecraft.core.item.ItemStack;
@@ -9,8 +11,10 @@ import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
 import org.luaj.vm2.lib.OneArgFunction;
+import org.luaj.vm2.lib.ThreeArgFunction;
 import org.luaj.vm2.lib.TwoArgFunction;
 import org.luaj.vm2.lib.VarArgFunction;
+import turing.btatweaker.util.JSONUtils;
 import turing.btatweaker.util.LuaFunctionFactory;
 import turniplabs.halplibe.helper.RecipeBuilder;
 
@@ -28,6 +32,8 @@ public class RecipeLib extends TwoArgFunction {
         t.set("addItemsToGroup", new AddItemsToGroup());
         t.set("getItemsInGroup", new GetItemsInGroup());
         t.set("removeItemsFromGroup", new RemoveItemsFromGroup());
+        t.set("removeRecipe", new RemoveRecipe());
+        t.set("addJSONRecipe", new AddJSONRecipe());
         t.set("Workbench", new WorkbenchLib());
         t.set("CraftingTable", t.get("Workbench"));
         t.set("Furnace", new FurnaceLib());
@@ -97,6 +103,33 @@ public class RecipeLib extends TwoArgFunction {
         }
 
         return null;
+    }
+
+    protected static final class AddJSONRecipe extends OneArgFunction {
+        @Override
+        public LuaValue call(LuaValue json) {
+            LuaTable t = json.checktable();
+
+            JsonArray array = new JsonArray();
+            array.add(JSONUtils.convertLuaToJSON(t));
+
+            DataLoader.loadRecipesFromString(JSONUtils.GSON.toJson(array));
+
+            return NIL;
+        }
+    }
+
+    protected static final class RemoveRecipe extends ThreeArgFunction {
+        @Override
+        public LuaValue call(LuaValue namespace, LuaValue group, LuaValue recipeId) {
+            String modId = namespace.checkjstring();
+            String recipeGroup = group.checkjstring();
+            String recipe = recipeId.checkjstring();
+
+            RecipeBuilder.getRecipeNamespace(modId).getItem(recipeGroup).unregister(recipe);
+
+            return NIL;
+        }
     }
 
     protected static final class GetItemsInGroup extends TwoArgFunction {
