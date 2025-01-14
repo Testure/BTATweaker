@@ -13,16 +13,34 @@ import turing.btatweaker.api.IScriptExecutionPoint;
 import turing.btatweaker.util.ScriptUtil;
 
 import java.io.File;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ScriptManager {
     public static final List<LuaScript> SCRIPTS = new ArrayList<>();
     public static final Globals GLOBALS = new Globals();
+    public static final PrintStream log;
 
-    public final List<String> toLog = new ArrayList<>();
+    public final List<String> toLog = new ArrayList<String>() {
+        @Override
+        public boolean add(String s) {
+            log.println(s);
+            return super.add(s);
+        }
+    };
+
+    static {
+        try {
+            log = new PrintStream(ScriptUtil.getBaseDir().getPath() + "/" + BTATweaker.MOD_ID + ".log");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     public static void initGlobals(ScriptGlobals gatherer) {
+        GLOBALS.STDOUT = log;
+
         GLOBALS.load(new JseBaseLib());
         GLOBALS.load(new PackageLib());
         GLOBALS.load(new Bit32Lib());
