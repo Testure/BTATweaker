@@ -2,8 +2,6 @@ package turing.btatweaker;
 
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.core.data.registry.Registries;
-import net.minecraft.core.data.registry.recipe.RecipeNamespace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import turing.btatweaker.api.IScriptExecutionPoint;
@@ -14,6 +12,7 @@ import turing.btatweaker.impl.*;
 import turing.btatweaker.lua.ScriptGlobals;
 import turing.btatweaker.lua.ScriptManager;
 import turing.btatweaker.luapi.*;
+import turniplabs.halplibe.helper.RecipeBuilder;
 import turniplabs.halplibe.util.ClientStartEntrypoint;
 import turniplabs.halplibe.util.GameStartEntrypoint;
 import turniplabs.halplibe.util.RecipeEntrypoint;
@@ -24,7 +23,6 @@ import java.util.List;
 public class BTATweaker implements ModInitializer, GameStartEntrypoint, RecipeEntrypoint, ClientStartEntrypoint, IBTATweaker, BTATweakerEntrypoint {
     public static final String MOD_ID = "btatweaker";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
-    public static final RecipeNamespace namespace = new RecipeNamespace();
     public static final List<ModLibrary> modLibs = new ArrayList<>();
     public static final List<IScriptExecutionPoint> executionPoints = new ArrayList<>();
     public static final List<IScriptPreprocessor<?>> preprocessors = new ArrayList<>();
@@ -131,6 +129,6 @@ public class BTATweaker implements ModInitializer, GameStartEntrypoint, RecipeEn
 
     @Override
     public void initNamespaces() {
-        Registries.RECIPES.register(MOD_ID, namespace);
+        RecipeBuilder.initNameSpace(MOD_ID);
     }
 }
