@@ -13,11 +13,11 @@ public class UtilLib extends TwoArgFunction {
         env.set("util", t);
         env.get("package").get("loaded").set("util", t);
 
-        LuaTable luaTag = new LuaTable();
+        /*LuaTable luaTag = new LuaTable();
         luaTag.set("new", LuaFunctionFactory.zeroArgFunction(LuaTag::new));
 
         env.set("LuaTag", luaTag);
-        env.get("package").get("loaded").set("LuaTag", luaTag);
+        env.get("package").get("loaded").set("LuaTag", luaTag);*/
 
         return t;
     }

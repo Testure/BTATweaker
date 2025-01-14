@@ -1,6 +1,6 @@
 package turing.btatweaker.luapi;
 
-import com.mojang.nbt.CompoundTag;
+//import com.mojang.nbt.tags.CompoundTag;
 import org.jetbrains.annotations.Nullable;
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaTable;
@@ -14,7 +14,7 @@ import turing.btatweaker.util.LuaFunctionFactory;
 import java.util.function.Consumer;
 
 public class LuaTag extends LuaClass {
-    private final CompoundTag tag;
+    /*private final CompoundTag tag;
     private final Consumer<CompoundTag> changeCallback;
 
     public LuaTag(CompoundTag tag, @Nullable Consumer<CompoundTag> changeCallback) {
@@ -325,5 +325,5 @@ public class LuaTag extends LuaClass {
         }
 
         protected abstract void putData(String key, LuaValue value);
-    }
+    }*/
 }

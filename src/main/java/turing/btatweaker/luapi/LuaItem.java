@@ -33,10 +33,10 @@ public class LuaItem extends LuaClass implements IItemConvertible, IIngredient {
 
             return LuaValue.valueOf(luaItem.realItem.getLanguageKey(luaItem.stack));
         }));
-        rawset("WithTag", new WithTag());
+        /*rawset("WithTag", new WithTag());
         rawset("HasData", LuaFunctionFactory.zeroArgMethod((self) ->
                 LuaValue.valueOf(self.get("Tag") != NIL)
-        ));
+        ));*/
 
         rawset("Amount", stack.stackSize);
         rawset("Id", realItem.id);
@@ -46,7 +46,7 @@ public class LuaItem extends LuaClass implements IItemConvertible, IIngredient {
         rawset("RegistryName", realItem.namespaceID.toString());*/
         rawset("TranslationKey", realItem.getKey());
         rawset("Metadata", stack.getMetadata());
-        rawset("Tag", new LuaTag(stack.getData(), stack::setData));
+        //rawset("Tag", new LuaTag(stack.getData(), stack::setData));
     }
 
     public LuaItem(Item item) {
@@ -133,7 +133,7 @@ public class LuaItem extends LuaClass implements IItemConvertible, IIngredient {
         return Collections.singletonList(stack);
     }
 
-    protected static final class WithTag extends TwoArgFunction {
+    /*protected static final class WithTag extends TwoArgFunction {
         @Override
         public LuaValue call(LuaValue self, LuaValue tag) {
             LuaTag luaTag;
@@ -149,5 +149,5 @@ public class LuaItem extends LuaClass implements IItemConvertible, IIngredient {
 
             return self;
         }
-    }
+    }*/
 }
