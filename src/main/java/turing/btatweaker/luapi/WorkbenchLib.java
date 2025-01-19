@@ -10,6 +10,7 @@ import org.luaj.vm2.lib.TwoArgFunction;
 import org.luaj.vm2.lib.VarArgFunction;
 import turing.btatweaker.BTATweaker;
 import turing.btatweaker.util.LuaFunctionFactory;
+import turing.docs.*;
 import turniplabs.halplibe.helper.RecipeBuilder;
 import turniplabs.halplibe.helper.recipeBuilders.RecipeBuilderShaped;
 import turniplabs.halplibe.helper.recipeBuilders.RecipeBuilderShapeless;
@@ -17,17 +18,26 @@ import turniplabs.halplibe.helper.recipeBuilders.RecipeBuilderShapeless;
 import java.util.ArrayList;
 import java.util.List;
 
+@turing.docs.LuaClass(value = "WorkbenchLibrary", folder = "Recipes", constructor = @Function(""))
+@Description("Allows access to workbench (crafting) recipes.")
 public class WorkbenchLib extends LuaClass {
     public WorkbenchLib() {
         super();
         rawset("addShapeless", new AddShapeless());
         rawset("addShaped", new AddShaped());
-        rawset("removeRecipe", LuaFunctionFactory.twoArgFunction((arg, arg2) -> {
-            RecipeBuilder.ModifyWorkbench(arg.checkjstring()).removeRecipe(arg2.checkjstring());
-            return NIL;
-        }));
+        rawset("removeRecipe", new RemoveRecipe());
     }
 
+    @Function(value = "removeRecipe", arguments = {@Argument(value = "string", name = "namespace"), @Argument(value = "string", name = "id")})
+    protected static final class RemoveRecipe extends TwoArgFunction {
+        @Override
+        public LuaValue call(LuaValue arg, LuaValue arg2) {
+            RecipeBuilder.ModifyWorkbench(arg.checkjstring()).removeRecipe(arg2.checkjstring());
+            return NIL;
+        }
+    }
+
+    @Function(value = "addShaped", returnType = "ShapedRecipeBuilder", arguments = {@Argument(value = "string", name = "id"), @Argument(value = "Item", name = "output")})
     protected static final class AddShaped extends TwoArgFunction {
         @Override
         public LuaValue call(LuaValue arg1, LuaValue arg2) {
@@ -42,6 +52,16 @@ public class WorkbenchLib extends LuaClass {
         }
     }
 
+    @Function(value = "addShapeless", arguments = {
+            @Argument(value = "string", name = "id"),
+            @Argument(value = "Item", name = "output"),
+            @Argument(value = "Ingredient...", name = "inputs")
+    }, examples = @FunctionExample({
+            "\"cool_recipe\"",
+            "item(\"tile.wool\", 5)",
+            "item(1)",
+            "itemgroup(\"minecraft:iron_ores\")"
+    }))
     protected static final class AddShapeless extends VarArgFunction {
         @Override
         public LuaValue invoke(Varargs args) {
@@ -78,6 +98,7 @@ public class WorkbenchLib extends LuaClass {
         }
     }
 
+    @turing.docs.LuaClass(value = "ShapedRecipeBuilder", constructor = @Function(""))
     protected static final class ShapedBuilder extends LuaClass {
         private RecipeBuilderShaped builder;
 
@@ -92,6 +113,11 @@ public class WorkbenchLib extends LuaClass {
             }));
         }
 
+        @Method(value = "Shape", builder = true, arguments = {@Argument(value = "string...", name = "shape")}, examples = @FunctionExample({
+                "\n\t\"X\"",
+                "\n\t\"#\"",
+                "\n\t\"#\"\n"
+        }))
         protected final class Shape extends VarArgFunction {
             @Override
             public LuaValue invoke(Varargs args) {
@@ -113,6 +139,13 @@ public class WorkbenchLib extends LuaClass {
             }
         }
 
+        @Method(value = "Input", builder = true, arguments = {@Argument(value = "string", name = "key"), @Argument(value = "Ingredient", name = "input")}, examples = {@FunctionExample({
+                "\"X\"",
+                "item(\"item.ingot.gold\")"
+        }), @FunctionExample({
+                "\"#\"",
+                "item(\"item.ingot.iron\")"
+        })})
         protected final class Input extends ThreeArgFunction {
             @Override
             public LuaValue call(LuaValue self, LuaValue arg1, LuaValue arg2) {

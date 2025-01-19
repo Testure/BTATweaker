@@ -12,6 +12,7 @@ import turing.btatweaker.impl.*;
 import turing.btatweaker.lua.ScriptGlobals;
 import turing.btatweaker.lua.ScriptManager;
 import turing.btatweaker.luapi.*;
+import turing.docs.Docs;
 import turniplabs.halplibe.helper.RecipeBuilder;
 import turniplabs.halplibe.util.ClientStartEntrypoint;
 import turniplabs.halplibe.util.GameStartEntrypoint;
@@ -36,10 +37,13 @@ public class BTATweaker implements ModInitializer, GameStartEntrypoint, RecipeEn
     public static final ExecutionPointBeforeClientStart BEFORE_CLIENT_START = new ExecutionPointBeforeClientStart();
     public static final ExecutionPointAfterClientStart AFTER_CLIENT_START = new ExecutionPointAfterClientStart();
 
+    public static boolean SHOULD_GEN_DOCS = false;
+
     @Override
     public void onInitialize() {
         ScriptGlobals gatherer = new ScriptGlobals();
         FabricLoader.getInstance().getEntrypoints("btatweakerPlugin", BTATweakerEntrypoint.class).forEach((plugin) -> {
+            Docs.packagesToSearch.add(plugin.getClass().getPackage().getName());
             plugin.addGlobals(gatherer);
             plugin.initPlugin(this);
         });
@@ -51,6 +55,18 @@ public class BTATweaker implements ModInitializer, GameStartEntrypoint, RecipeEn
         }
         manager.loadScripts();
         manager.preprocessScripts();
+
+        String[] args = FabricLoader.getInstance().getLaunchArguments(true);
+        for (String arg : args) {
+            if (arg.equals("--gen-btatweaker-docs")) {
+                SHOULD_GEN_DOCS = true;
+                break;
+            }
+        }
+
+        if (SHOULD_GEN_DOCS) {
+            Docs.genDocs();
+        }
     }
 
     public void reloadScripts() {

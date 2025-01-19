@@ -7,11 +7,25 @@ import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.lib.OneArgFunction;
 import org.luaj.vm2.lib.TwoArgFunction;
 import turing.btatweaker.util.LuaFunctionFactory;
+import turing.docs.*;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+@turing.docs.LuaClass(value = "Item", extend = "Ingredient", constructor = @Function(value = "item", returnType = "Item", arguments = {
+        @Argument(value = "number | string", name = "item"),
+        @Argument(value = "number?", name = "metadata")
+}, examples = {
+        @FunctionExample(value = "\"item.ingot.gold\"", returnValues = "goldIngot"),
+        @FunctionExample(value = "260", returnValues = "bedrock"),
+        @FunctionExample(value = {"110", "5"}, returnValues = "limeWool")
+}))
+@Property(name = "Amount", value = "number", description = "The amount of items")
+@Property(name = "Id", value = "number", description = "The id of this Item")
+@Property(name = "TranslationKey", value = "string", description = "The translation key of this Item")
+@Property(name = "Metadata", value = "number", description = "The metadata of this Item")
+@Description("Represents an ItemStack.")
 public class LuaItem extends LuaClass implements IItemConvertible, IIngredient {
     private final Item realItem;
     private final ItemStack stack;
@@ -22,12 +36,7 @@ public class LuaItem extends LuaClass implements IItemConvertible, IIngredient {
         this.realItem = item.getItem();
         this.stack = item;
 
-        rawset("WithMetadata", LuaFunctionFactory.oneArgBuilderMethod((self, arg) -> {
-            int metadata = arg.checkint();
-
-            self.rawset("Metadata", metadata);
-            ((LuaItem) self).stack.setMetadata(metadata);
-        }));
+        rawset("WithMetadata", new WithMetadata());
         rawset("GetTranslationKey", LuaFunctionFactory.zeroArgMethod((self) -> {
             LuaItem luaItem = (LuaItem) self;
 
@@ -131,6 +140,20 @@ public class LuaItem extends LuaClass implements IItemConvertible, IIngredient {
     @Override
     public List<ItemStack> resolve() {
         return Collections.singletonList(stack);
+    }
+
+    @Method(value = "WithMetadata", builder = true, arguments = @Argument(value = "number", name = "meta"), examples = @FunctionExample(value = "5", returnValues = "limeWool"))
+    @Description("Returns this Item, now with the given metadata.")
+    protected static final class WithMetadata extends TwoArgFunction {
+        @Override
+        public LuaValue call(LuaValue self, LuaValue arg) {
+            int metadata = arg.checkint();
+
+            self.rawset("Metadata", metadata);
+            ((LuaItem) self).stack.setMetadata(metadata);
+
+            return self;
+        }
     }
 
     /*protected static final class WithTag extends TwoArgFunction {

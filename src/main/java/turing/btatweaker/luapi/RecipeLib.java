@@ -16,11 +16,19 @@ import org.luaj.vm2.lib.TwoArgFunction;
 import org.luaj.vm2.lib.VarArgFunction;
 import turing.btatweaker.util.JSONUtils;
 import turing.btatweaker.util.LuaFunctionFactory;
+import turing.docs.*;
 import turniplabs.halplibe.helper.RecipeBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Library(value = "recipes", className = "Recipes")
+@Description("Provides access to recipes.")
+@Property(name = "Workbench", value = "WorkbenchLibrary", description = "Provides access to workbench library.")
+@Property(name = "CraftingTable", value = "WorkbenchLibrary")
+@Property(name = "Furnace", value = "FurnaceLibrary", description = "")
+@Property(name = "BlastFurnace", value = "BlastFurnaceLibrary", description = "")
+@Property(name = "Trommel", value = "TrommelLibrary", description = "")
 public class RecipeLib extends TwoArgFunction {
     @Override
     public LuaValue call(LuaValue modname, LuaValue env) {
@@ -105,6 +113,19 @@ public class RecipeLib extends TwoArgFunction {
         return null;
     }
 
+    @Function(value = "addJSONRecipe", arguments = @Argument(value = "{}", name = "recipe"), examples = @FunctionExample(
+            "{\n\t[\"name\"] = \"btatweaker:workbench/epic_shovel\",\n\t" +
+                    "[\"type\"] = \"minecraft:crafting/shaped\",\n\t" +
+                    "[\"pattern\"] = {\n\t\t\"X\",\n\t\t\"#\",\n\t\t\"#\"\n\t" +
+                    "},\n\t[\"symbols\"] = {\n\t\t" +
+                    "{\n\t\t\t[\"symbol\"] = \"#\",\n\t\t\t" +
+                    "[\"group\"] = \"minecraft:iron_ores\"\n\t\t},\n\t\t{\n\t\t\t" +
+                    "[\"symbol\"] = \"X\",\n\t\t\t" +
+                    "[\"stack\"] = {\n\t\t\t\t[\"id\"] = 180,\n\t\t\t\t[\"amount\"] = 1,\n\t\t\t\t[\"meta\"] = 0\n\t\t\t}\n\t\t}\n\t},\n\t" +
+                    "[\"result\"] = {\n\t\t[\"id\"] = 4,\n\t\t[\"amount\"] = 1,\n\t\t[\"meta\"] = 0\n\t},\n\t" +
+                    "[\"consumeContainers\"] = true\n}"
+    ))
+    @Description({"Attempts to convert a table into a JSON object and tries to add it as a recipe.", "Recipes created with BTATweaker must should always have the namespace `btatweaker`"})
     protected static final class AddJSONRecipe extends OneArgFunction {
         @Override
         public LuaValue call(LuaValue json) {
@@ -132,6 +153,11 @@ public class RecipeLib extends TwoArgFunction {
         }
     }
 
+    @Function(value = "getItemsInGroup", returnType = "{Item}", arguments = {
+            @Argument(value = "string", name = "namespace"),
+            @Argument(value = "string", name = "key")
+    }, examples = @FunctionExample(value = {"\"minecraft\"", "\"iron_ores\""}, returnValues = "ironOres"))
+    @Description("Gets a table containing all items that are in the given item group.")
     protected static final class GetItemsInGroup extends TwoArgFunction {
         @Override
         public LuaValue call(LuaValue modid, LuaValue key) {
@@ -150,6 +176,15 @@ public class RecipeLib extends TwoArgFunction {
         }
     }
 
+    @Function(value = "removeItemsFromGroup", arguments = {
+            @Argument(value = "string", name = "namespace"),
+            @Argument(value = "string", name = "key"),
+            @Argument(value = "Item...", name = "items")
+    }, examples = {
+            @FunctionExample({"\"minecraft\"", "\"iron_ores\"", "item(363)"}),
+            @FunctionExample({"\"minecraft\"", "\"diamond_ores\"", "item(\"tile.ore.diamond.basalt\")", "item(412)"})
+    })
+    @Description("removes all given items from the item group `namespace:key`")
     protected static final class RemoveItemsFromGroup extends VarArgFunction {
         @Override
         public LuaValue invoke(Varargs args) {
@@ -181,6 +216,15 @@ public class RecipeLib extends TwoArgFunction {
         }
     }
 
+    @Function(value = "addItemsToGroup", arguments = {
+            @Argument(value = "string", name = "namespace"),
+            @Argument(value = "string", name = "key"),
+            @Argument(value = "Item...", name = "items")
+    }, examples = {
+            @FunctionExample({"\"minecraft\"", "\"iron_ores\"", "item(260)"}),
+            @FunctionExample({"\"minecraft\"", "\"diamond_ores\"", "item(\"tile.obsidian\")", "item(110, 5)"})
+    })
+    @Description("Adds all given items to the item group `namespace:key`")
     protected static final class AddItemsToGroup extends VarArgFunction {
         @Override
         public LuaValue invoke(Varargs args) {
