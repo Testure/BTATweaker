@@ -17,8 +17,6 @@ import turniplabs.halplibe.helper.RecipeBuilder;
 import turniplabs.halplibe.util.ClientStartEntrypoint;
 import turniplabs.halplibe.util.GameStartEntrypoint;
 import turniplabs.halplibe.util.RecipeEntrypoint;
-import turniplabs.halplibe.util.TomlConfigHandler;
-import turniplabs.halplibe.util.toml.Toml;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +24,6 @@ import java.util.List;
 public class BTATweaker implements ModInitializer, GameStartEntrypoint, RecipeEntrypoint, ClientStartEntrypoint, IBTATweaker, BTATweakerEntrypoint {
     public static final String MOD_ID = "btatweaker";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
-    public static TomlConfigHandler configHandler;
     public static final List<ModLibrary> modLibs = new ArrayList<>();
     public static final List<IScriptExecutionPoint> executionPoints = new ArrayList<>();
     public static final List<IScriptPreprocessor<?>> preprocessors = new ArrayList<>();
@@ -44,14 +41,6 @@ public class BTATweaker implements ModInitializer, GameStartEntrypoint, RecipeEn
 
     @Override
     public void onInitialize() {
-        Toml config = new Toml();
-        config.addEntry("genDocs", "set to true to generate docs", false);
-        configHandler = new TomlConfigHandler(MOD_ID, config, true);
-
-        if (configHandler.getBoolean("genDocs")) {
-            SHOULD_GEN_DOCS = true;
-        }
-
         ScriptGlobals gatherer = new ScriptGlobals();
         FabricLoader.getInstance().getEntrypoints("btatweakerPlugin", BTATweakerEntrypoint.class).forEach((plugin) -> {
             Docs.packagesToSearch.add(plugin.getClass().getPackage().getName());
