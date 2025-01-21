@@ -1,7 +1,11 @@
 package turing.btatweaker.impl;
 
 import turing.btatweaker.api.IScriptExecutionPoint;
+import turing.docs.Description;
+import turing.docs.ExecutionPoint;
 
+@ExecutionPoint("OnProcessRecipes")
+@Description("Runs after OnRecipesReady")
 public class ExecutionPointProcessRecipes implements IScriptExecutionPoint {
     @Override
     public String getName() {

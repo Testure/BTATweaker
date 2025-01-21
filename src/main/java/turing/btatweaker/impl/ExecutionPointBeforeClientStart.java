@@ -1,7 +1,11 @@
 package turing.btatweaker.impl;
 
 import turing.btatweaker.api.IScriptExecutionPoint;
+import turing.docs.Description;
+import turing.docs.ExecutionPoint;
 
+@ExecutionPoint("BeforeClientStart")
+@Description({"Runs during BeforeClientStart", "Only runs on the client."})
 public class ExecutionPointBeforeClientStart implements IScriptExecutionPoint {
     @Override
     public String getName() {

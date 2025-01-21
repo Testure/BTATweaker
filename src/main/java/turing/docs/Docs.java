@@ -204,6 +204,10 @@ public class Docs {
             }
         });
 
+        if (clazz.isAnnotationPresent(ExecutionPoint.class)) {
+            builder.newLine().appendCode("--#" + name).newLine();
+        }
+
         if (extend != null) {
             builder.append("Extends ").appendCode(extend).newLine();
         }
@@ -273,7 +277,10 @@ public class Docs {
                     genDocs(clazz, def.folder(), def.value(), def.value(), !def.constructor().value().isEmpty() ? def.constructor() : null, !def.extend().isEmpty() ? def.extend() : null);
                 } else if (clazz.isAnnotationPresent(ModLibrary.class)) {
                     ModLibrary def = clazz.getAnnotation(ModLibrary.class);
-                    genDocs(clazz, "mods", "mods." + def.value(), def.className(), null, null);
+                    genDocs(clazz, "Mods", "mods." + def.value(), def.className(), null, null);
+                } else if (clazz.isAnnotationPresent(ExecutionPoint.class)) {
+                    ExecutionPoint def = clazz.getAnnotation(ExecutionPoint.class);
+                    genDocs(clazz, "ExecutionPoints", def.value().replaceFirst(String.valueOf(def.value().charAt(0)), String.valueOf(def.value().charAt(0)).toLowerCase()), def.value(), null, null);
                 }
             }
         }
