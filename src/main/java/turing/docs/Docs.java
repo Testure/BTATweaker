@@ -244,6 +244,9 @@ public class Docs {
                 } else if (clazz.isAnnotationPresent(LuaClass.class)) {
                     LuaClass def = clazz.getAnnotation(LuaClass.class);
                     genDocs(clazz, def.folder(), def.value(), def.value(), !def.constructor().value().isEmpty() ? def.constructor() : null, !def.extend().isEmpty() ? def.extend() : null);
+                } else if (clazz.isAnnotationPresent(ModLibrary.class)) {
+                    ModLibrary def = clazz.getAnnotation(ModLibrary.class);
+                    genDocs(clazz, "mods", "mods." + def.value(), def.className(), null, null);
                 }
             }
         }
