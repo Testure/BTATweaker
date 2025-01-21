@@ -226,6 +226,31 @@ public class Docs {
         }
     }
 
+    private static void genManualDoc(Class<?> clazz, ManualDoc def) {
+        try {
+            if (!def.name().isEmpty()) {
+                java.lang.reflect.Method method = clazz.getDeclaredMethod("writeDoc", MarkdownBuilder.class);
+                String folder = !def.folder().isEmpty() ? def.folder() : "extra";
+
+                File dir = getDir(getDocsDir().getName() + "/" + folder);
+                MarkdownBuilder builder = new MarkdownBuilder();
+
+                method.invoke(null, builder);
+
+                if (!builder.isEmpty()) {
+                    try (PrintWriter writer = new PrintWriter(dir.getAbsolutePath() + "/" + def.name() + ".md")) {
+                        String[] lines = builder.toString().split("\n");
+                        for (String s : lines) {
+                            writer.println(s);
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            BTATweaker.LOGGER.error(e.getMessage());
+        }
+    }
+
     public static void genDocs() {
         File dir = getDocsDir();
         File[] l = dir.listFiles();
@@ -238,7 +263,9 @@ public class Docs {
         long time = System.currentTimeMillis();
         for (String packageName : packagesToSearch) {
             for (Class<?> clazz : findAllClassesUsingClassLoader(packageName)) {
-                if (clazz.isAnnotationPresent(Library.class)) {
+                if (clazz.isAnnotationPresent(ManualDoc.class)) {
+                    genManualDoc(clazz, clazz.getAnnotation(ManualDoc.class));
+                } else if (clazz.isAnnotationPresent(Library.class)) {
                     Library def = clazz.getAnnotation(Library.class);
                     genDocs(clazz, "Libraries", def.value(), def.className(), null, null);
                 } else if (clazz.isAnnotationPresent(LuaClass.class)) {

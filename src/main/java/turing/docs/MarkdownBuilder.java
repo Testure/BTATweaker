@@ -156,6 +156,10 @@ public class MarkdownBuilder implements Appendable, CharSequence, Serializable {
         builder.trimToSize();
     }
 
+    public boolean isEmpty() {
+        return builder.length() <= 0;
+    }
+
     @Override
     public int length() {
         return builder.length();
