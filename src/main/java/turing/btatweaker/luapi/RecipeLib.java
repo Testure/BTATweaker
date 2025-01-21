@@ -140,6 +140,8 @@ public class RecipeLib extends TwoArgFunction {
         }
     }
 
+    //@Function(value = "removeRecipe", arguments = {@Argument(value = "string", name = "namespace"), @Argument(value = "string", name = "group"), @Argument(value = "string", name = "recipeId")})
+    @Description("Removes the given recipe.")
     protected static final class RemoveRecipe extends ThreeArgFunction {
         @Override
         public LuaValue call(LuaValue namespace, LuaValue group, LuaValue recipeId) {

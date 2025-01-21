@@ -17,7 +17,7 @@ import turing.docs.Method;
 import turniplabs.halplibe.helper.RecipeBuilder;
 import turniplabs.halplibe.helper.recipeBuilders.RecipeBuilderTrommel;
 
-@turing.docs.LuaClass(value = "TrommelLibrary", folder = "Recipes", constructor = @Function(""))
+@turing.docs.LuaClass(value = "TrommelLibrary", folder = "Recipes")
 public class TrommelLib extends LuaClass {
     public TrommelLib() {
         super();
@@ -42,7 +42,7 @@ public class TrommelLib extends LuaClass {
         }
     }
 
-    @turing.docs.LuaClass(value = "TrommelRecipeBuilder", constructor = @Function(""))
+    @turing.docs.LuaClass(value = "TrommelRecipeBuilder")
     public static final class TrommelBuilder extends LuaClass {
         private RecipeBuilderTrommel builder;
         private final String id;

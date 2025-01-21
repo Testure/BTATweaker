@@ -12,7 +12,7 @@ import turing.docs.FunctionExample;
 import turniplabs.halplibe.helper.RecipeBuilder;
 import turniplabs.halplibe.helper.recipeBuilders.RecipeBuilderFurnace;
 
-@turing.docs.LuaClass(value = "FurnaceLibrary", folder = "Recipes", constructor = @Function(""))
+@turing.docs.LuaClass(value = "FurnaceLibrary", folder = "Recipes")
 public class FurnaceLib extends LuaClass {
     public FurnaceLib() {
         super();

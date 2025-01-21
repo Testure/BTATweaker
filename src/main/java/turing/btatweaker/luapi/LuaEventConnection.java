@@ -12,7 +12,7 @@ import turing.docs.Method;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-@LuaClass(value = "EventConnection", constructor = @Function(""))
+@LuaClass(value = "EventConnection")
 @Description("A connection to an Event")
 public class LuaEventConnection extends turing.btatweaker.luapi.LuaClass {
     private final IScriptableEvent event;

@@ -14,5 +14,5 @@ public @interface LuaClass {
 
     String folder() default "Classes";
 
-    Function constructor();
+    Function constructor() default @Function("");
 }
