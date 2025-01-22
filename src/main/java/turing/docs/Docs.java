@@ -2,6 +2,8 @@ package turing.docs;
 
 import net.minecraft.core.util.collection.Pair;
 import org.jetbrains.annotations.Nullable;
+import org.reflections.Reflections;
+import org.reflections.util.ConfigurationBuilder;
 import turing.btatweaker.BTATweaker;
 import turing.btatweaker.util.ScriptUtil;
 
@@ -256,6 +258,8 @@ public class Docs {
     }
 
     public static void genDocs() {
+        long time = System.currentTimeMillis();
+
         File dir = getDocsDir();
         File[] l = dir.listFiles();
         if (l != null && l.length > 0 && dir.delete()) {
@@ -264,26 +268,25 @@ public class Docs {
             }
         }
 
-        long time = System.currentTimeMillis();
-        for (String packageName : packagesToSearch) {
-            for (Class<?> clazz : findAllClassesUsingClassLoader(packageName)) {
-                if (clazz.isAnnotationPresent(ManualDoc.class)) {
-                    genManualDoc(clazz, clazz.getAnnotation(ManualDoc.class));
-                } else if (clazz.isAnnotationPresent(Library.class)) {
-                    Library def = clazz.getAnnotation(Library.class);
-                    genDocs(clazz, "Libraries", def.value(), def.className(), null, null);
-                } else if (clazz.isAnnotationPresent(LuaClass.class)) {
-                    LuaClass def = clazz.getAnnotation(LuaClass.class);
-                    genDocs(clazz, def.folder(), def.value(), def.value(), !def.constructor().value().isEmpty() ? def.constructor() : null, !def.extend().isEmpty() ? def.extend() : null);
-                } else if (clazz.isAnnotationPresent(ModLibrary.class)) {
-                    ModLibrary def = clazz.getAnnotation(ModLibrary.class);
-                    genDocs(clazz, "Mods", "mods." + def.value(), def.className(), null, null);
-                } else if (clazz.isAnnotationPresent(ExecutionPoint.class)) {
-                    ExecutionPoint def = clazz.getAnnotation(ExecutionPoint.class);
-                    genDocs(clazz, "ExecutionPoints", def.value().replaceFirst(String.valueOf(def.value().charAt(0)), String.valueOf(def.value().charAt(0)).toLowerCase()), def.value(), null, null);
-                }
+        Set<Class<?>> list = new Reflections(new ConfigurationBuilder().forPackages(packagesToSearch.toArray(new String[0]))).getTypesAnnotatedWith(Documented.class);
+        for (Class<?> clazz : list) {
+            if (clazz.isAnnotationPresent(ManualDoc.class)) {
+                genManualDoc(clazz, clazz.getAnnotation(ManualDoc.class));
+            } else if (clazz.isAnnotationPresent(Library.class)) {
+                Library def = clazz.getAnnotation(Library.class);
+                genDocs(clazz, "Libraries", def.value(), def.className(), null, null);
+            } else if (clazz.isAnnotationPresent(LuaClass.class)) {
+                LuaClass def = clazz.getAnnotation(LuaClass.class);
+                genDocs(clazz, def.folder(), def.value(), def.value(), !def.constructor().value().isEmpty() ? def.constructor() : null, !def.extend().isEmpty() ? def.extend() : null);
+            } else if (clazz.isAnnotationPresent(ModLibrary.class)) {
+                ModLibrary def = clazz.getAnnotation(ModLibrary.class);
+                genDocs(clazz, "Mods", "mods." + def.value(), def.className(), null, null);
+            } else if (clazz.isAnnotationPresent(ExecutionPoint.class)) {
+                ExecutionPoint def = clazz.getAnnotation(ExecutionPoint.class);
+                genDocs(clazz, "ExecutionPoints", def.value().replaceFirst(String.valueOf(def.value().charAt(0)), String.valueOf(def.value().charAt(0)).toLowerCase()), def.value(), null, null);
             }
         }
+
         BTATweaker.LOGGER.info("Created docs in {}ms", System.currentTimeMillis() - time);
     }
 }

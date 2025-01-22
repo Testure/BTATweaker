@@ -10,13 +10,11 @@ import org.luaj.vm2.lib.OneArgFunction;
 import org.luaj.vm2.lib.TwoArgFunction;
 import org.luaj.vm2.lib.VarArgFunction;
 import turing.btatweaker.BTATweaker;
-import turing.docs.Argument;
-import turing.docs.Description;
-import turing.docs.Function;
-import turing.docs.Method;
+import turing.docs.*;
 import turniplabs.halplibe.helper.RecipeBuilder;
 import turniplabs.halplibe.helper.recipeBuilders.RecipeBuilderTrommel;
 
+@Documented
 @turing.docs.LuaClass(value = "TrommelLibrary", folder = "Recipes")
 public class TrommelLib extends LuaClass {
     public TrommelLib() {
@@ -42,6 +40,7 @@ public class TrommelLib extends LuaClass {
         }
     }
 
+    @Documented
     @turing.docs.LuaClass(value = "TrommelRecipeBuilder")
     public static final class TrommelBuilder extends LuaClass {
         private RecipeBuilderTrommel builder;

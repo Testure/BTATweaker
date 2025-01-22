@@ -7,11 +7,13 @@ import org.luaj.vm2.lib.TwoArgFunction;
 import org.luaj.vm2.lib.VarArgFunction;
 import turing.btatweaker.BTATweaker;
 import turing.docs.Argument;
+import turing.docs.Documented;
 import turing.docs.Function;
 import turing.docs.FunctionExample;
 import turniplabs.halplibe.helper.RecipeBuilder;
 import turniplabs.halplibe.helper.recipeBuilders.RecipeBuilderFurnace;
 
+@Documented
 @turing.docs.LuaClass(value = "FurnaceLibrary", folder = "Recipes")
 public class FurnaceLib extends LuaClass {
     public FurnaceLib() {

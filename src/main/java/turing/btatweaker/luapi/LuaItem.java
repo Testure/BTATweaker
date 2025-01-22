@@ -13,6 +13,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+@Documented
 @turing.docs.LuaClass(value = "Item", extend = "Ingredient", constructor = @Function(value = "item", returnType = "Item", arguments = {
         @Argument(value = "number | string", name = "item"),
         @Argument(value = "number?", name = "metadata")

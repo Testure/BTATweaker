@@ -18,6 +18,7 @@ import turniplabs.halplibe.helper.recipeBuilders.RecipeBuilderShapeless;
 import java.util.ArrayList;
 import java.util.List;
 
+@Documented
 @turing.docs.LuaClass(value = "WorkbenchLibrary", folder = "Recipes")
 @Description("Allows access to workbench (crafting) recipes.")
 public class WorkbenchLib extends LuaClass {
@@ -98,6 +99,7 @@ public class WorkbenchLib extends LuaClass {
         }
     }
 
+    @Documented
     @turing.docs.LuaClass(value = "ShapedRecipeBuilder")
     protected static final class ShapedBuilder extends LuaClass {
         private RecipeBuilderShaped builder;

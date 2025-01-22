@@ -4,14 +4,13 @@ import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.lib.OneArgFunction;
 import turing.btatweaker.api.IScriptableEvent;
 import turing.btatweaker.lua.EventHandler;
-import turing.docs.Function;
+import turing.docs.*;
 import turing.docs.LuaClass;
-import turing.docs.Description;
-import turing.docs.Method;
 
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@Documented
 @LuaClass(value = "EventConnection")
 @Description("A connection to an Event")
 public class LuaEventConnection extends turing.btatweaker.luapi.LuaClass {

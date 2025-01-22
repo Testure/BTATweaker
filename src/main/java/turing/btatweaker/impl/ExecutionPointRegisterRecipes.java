@@ -2,8 +2,10 @@ package turing.btatweaker.impl;
 
 import turing.btatweaker.api.IScriptExecutionPoint;
 import turing.docs.Description;
+import turing.docs.Documented;
 import turing.docs.ExecutionPoint;
 
+@Documented
 @ExecutionPoint("OnRegisterRecipes")
 @Description("Runs during OnRecipesReady")
 public class ExecutionPointRegisterRecipes implements IScriptExecutionPoint {

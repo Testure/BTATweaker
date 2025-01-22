@@ -22,6 +22,7 @@ import turniplabs.halplibe.helper.RecipeBuilder;
 import java.util.ArrayList;
 import java.util.List;
 
+@Documented
 @Library(value = "recipes", className = "Recipes")
 @Description("Provides access to recipes.")
 @Property(name = "Workbench", value = "WorkbenchLibrary", description = "Provides access to workbench library.")

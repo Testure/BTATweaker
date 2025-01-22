@@ -10,6 +10,7 @@ import turing.btatweaker.api.IScriptableEvent;
 import turing.btatweaker.lua.EventHandler;
 import turing.docs.*;
 
+@Documented
 @Library(value = "events", className = "Events")
 @Description("Provides functions for connecting to and dealing with events.")
 public class EventLib extends TwoArgFunction {

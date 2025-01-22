@@ -9,6 +9,7 @@ import turing.docs.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Documented
 @turing.docs.LuaClass(value = "ItemGroup", extend = "Ingredient", constructor = @Function(value = "itemgroup", returnType = "ItemGroup", arguments = @Argument(value = "string", name = "itemGroupName"), examples = @FunctionExample(returnValues = "ironOres", value = "\"minecraft:iron_ores\"")))
 @Property(name = "Amount", value = "number")
 @Property(name = "ItemGroup", value = "string")

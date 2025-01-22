@@ -7,11 +7,9 @@ import org.luaj.vm2.lib.OneArgFunction;
 import org.luaj.vm2.lib.TwoArgFunction;
 import turing.btatweaker.BTATweaker;
 import turing.btatweaker.api.ModLibrary;
-import turing.docs.Argument;
-import turing.docs.Description;
-import turing.docs.Function;
-import turing.docs.Library;
+import turing.docs.*;
 
+@Documented
 @Library(value = "mods", className = "Mods")
 @Description("Provides access to addon libraries.")
 public class ModLib extends TwoArgFunction {
