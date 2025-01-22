@@ -10,41 +10,8 @@ import turing.btatweaker.util.ScriptUtil;
 import java.io.*;
 import java.lang.annotation.Annotation;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class Docs {
-    public static final List<String> packagesToSearch = new ArrayList<>();
-
-    private static Set<Class<?>> findAllClassesUsingClassLoader(String packageName) {
-        return getClasses(packageName).stream().map(line -> getClass(line.getLeft(), line.getRight())).collect(Collectors.toSet());
-    }
-
-    private static List<Pair<String, String>> getClasses(String packageName) {
-        InputStream stream = ClassLoader.getSystemClassLoader()
-                .getResourceAsStream(packageName.replaceAll("[.]", "/"));
-        BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
-        Set<String> lines = reader.lines().collect(Collectors.toSet());
-        List<Pair<String, String>> classes = lines.stream().filter(line -> line.endsWith(".class")).map(line -> Pair.of(line, packageName)).collect(Collectors.toList());
-
-        lines.forEach((line) -> {
-            if (!line.contains(".class") && !line.contains("mixin")) {
-                classes.addAll(getClasses(packageName + "." + line));
-            }
-        });
-
-        return classes;
-    }
-
-    private static Class<?> getClass(String className, String packageName) {
-        try {
-            return Class.forName(packageName + "."
-                    + className.substring(0, className.lastIndexOf('.')));
-        } catch (ClassNotFoundException e) {
-            BTATweaker.LOGGER.error(e.getMessage());
-        }
-        return null;
-    }
-
     private static File getDir(String name) {
         File dir = new File(ScriptUtil.getBaseDir().getAbsolutePath() + "/" + name);
         if (!dir.exists() && !dir.mkdir()) throw new IllegalStateException("Could not make directory '" + name + "'");
@@ -268,7 +235,7 @@ public class Docs {
             }
         }
 
-        Set<Class<?>> list = new Reflections(new ConfigurationBuilder().forPackages(packagesToSearch.toArray(new String[0]))).getTypesAnnotatedWith(Documented.class);
+        Set<Class<?>> list = new Reflections(new ConfigurationBuilder().forPackages(BTATweaker.packagesToSearch.toArray(new String[0]))).getTypesAnnotatedWith(Documented.class);
         for (Class<?> clazz : list) {
             if (clazz.isAnnotationPresent(ManualDoc.class)) {
                 genManualDoc(clazz, clazz.getAnnotation(ManualDoc.class));

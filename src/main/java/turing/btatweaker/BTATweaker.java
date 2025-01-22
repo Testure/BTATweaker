@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BTATweaker implements ModInitializer, GameStartEntrypoint, RecipeEntrypoint, ClientStartEntrypoint, IBTATweaker, BTATweakerEntrypoint {
+    public static final List<String> packagesToSearch = new ArrayList<>();
+
     public static final String MOD_ID = "btatweaker";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
     public static final List<ModLibrary> modLibs = new ArrayList<>();
@@ -43,7 +45,7 @@ public class BTATweaker implements ModInitializer, GameStartEntrypoint, RecipeEn
     public void onInitialize() {
         ScriptGlobals gatherer = new ScriptGlobals();
         FabricLoader.getInstance().getEntrypoints("btatweakerPlugin", BTATweakerEntrypoint.class).forEach((plugin) -> {
-            Docs.packagesToSearch.add(plugin.getClass().getPackage().getName());
+            packagesToSearch.add(plugin.getClass().getPackage().getName());
             plugin.addGlobals(gatherer);
             plugin.initPlugin(this);
         });
