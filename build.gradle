@@ -1,7 +1,7 @@
 plugins {
-	//id 'fabric-loom' version '1.7.bta'
-	id 'babric-loom' version '1.4.+'
+	id 'fabric-loom' version '1.10.0-bta'
 	id 'java'
+	id 'maven-publish'
 }
 
 import org.gradle.internal.os.OperatingSystem
@@ -17,6 +17,7 @@ switch (OperatingSystem.current()) {
 		break
 	case OperatingSystem.MAC_OS:
 		project.ext.lwjglNatives = "natives-macos"
+		break
 }
 
 group = project.mod_group
@@ -25,12 +26,7 @@ version = project.mod_version
 
 loom {
 	noIntermediateMappings()
-	if (project.bta_version.contains("7.3")) {
-		customMinecraftMetadata.set("https://github.com/Turnip-Labs/bta-manifest-repo/releases/download/v${project.bta_version}/${project.bta_version}.json")
-	} else {
-		gluedMinecraftJar()
-		customMinecraftManifest.set("https://github.com/Turnip-Labs/bta-manifest-repo/releases/download/v${project.bta_version}/${project.bta_version}.json")
-	}
+	customMinecraftMetadata.set("https://downloads.betterthanadventure.net/bta-client/${project.bta_channel}/v${project.bta_version}/manifest.json")
 }
 
 repositories {
@@ -84,30 +80,6 @@ repositories {
 		}
 		metadataSources { artifact() }
 	}
-	ivy {
-		url = "https://github.com/Turnip-Labs"
-		patternLayout {
-			artifact "[organisation]/releases/download/v[revision]/[module]-[revision].jar"
-			m2compatible = true
-		}
-		metadataSources { artifact() }
-	}
-	ivy {
-		url = "https://github.com/Turnip-Labs"
-		patternLayout {
-			artifact "[organisation]/releases/download/[revision]/[module]-[revision].jar"
-			m2compatible = true
-		}
-		metadataSources { artifact() }
-	}
-	ivy {
-		url = "https://github.com/Turnip-Labs"
-		patternLayout {
-			artifact "[organisation]/releases/download/[revision]/[module]-bta-[revision].jar"
-			m2compatible = true
-		}
-		metadataSources { artifact() }
-	}
 }
 
 dependencies {
@@ -115,21 +87,11 @@ dependencies {
 	mappings loom.layered() {}
 
 	modRuntimeOnly "objects:client:43db9b498cb67058d2e12d394e6507722e71bb45" // https://piston-data.mojang.com/v1/objects/43db9b498cb67058d2e12d394e6507722e71bb45/client.jar
-	if (project.bta_version.contains("7.3")) {
-		modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
-	} else {
-		modImplementation "fabric-loader:fabric-loader:0.15.6-babric.6-bta"
-	}
+	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
-	// Helper library
-	// If you do not need Halplibe you can comment this line out or delete this line
-	if (project.bta_version.contains("7.3")) {
-		implementation("turniplabs:halplibe:${project.halplibe_version}")
-		modImplementation("turniplabs:modmenu-bta:${project.mod_menu_version}")
-	} else {
-		modImplementation "bta-halplibe:halplibe:4.1.3"
-		modImplementation "ModMenu:ModMenu:2.0.6"
-	}
+	modImplementation("turniplabs:halplibe:${project.halplibe_version}")
+
+	modImplementation("turniplabs:modmenu-bta:${project.mod_menu_version}")
 
 	include(implementation("org.luaj:luaj-jse:3.0.1"))
 	include(implementation("org.reflections:reflections:0.10.2"))
@@ -145,24 +107,20 @@ dependencies {
 	implementation("org.apache.logging.log4j:log4j-1.2-api:${log4jVersion}")
 
 	include(implementation("org.apache.commons:commons-lang3:3.12.0"))
+	modImplementation("com.github.zarzelcow:legacy-lwjgl3:1.0.4")
 
-	if (project.bta_version.contains("7.3")) {
-		modImplementation("com.github.zarzelcow:legacy-lwjgl3:1.0.4")
-		implementation platform("org.lwjgl:lwjgl-bom:$lwjglVersion")
-
-		runtimeOnly "org.lwjgl:lwjgl::$lwjglNatives"
-		runtimeOnly "org.lwjgl:lwjgl-assimp::$lwjglNatives"
-		runtimeOnly "org.lwjgl:lwjgl-glfw::$lwjglNatives"
-		runtimeOnly "org.lwjgl:lwjgl-openal::$lwjglNatives"
-		runtimeOnly "org.lwjgl:lwjgl-opengl::$lwjglNatives"
-		runtimeOnly "org.lwjgl:lwjgl-stb::$lwjglNatives"
-		implementation "org.lwjgl:lwjgl:$lwjglVersion"
-		implementation "org.lwjgl:lwjgl-assimp:$lwjglVersion"
-		implementation "org.lwjgl:lwjgl-glfw:$lwjglVersion"
-		implementation "org.lwjgl:lwjgl-openal:$lwjglVersion"
-		implementation "org.lwjgl:lwjgl-opengl:$lwjglVersion"
-		implementation "org.lwjgl:lwjgl-stb:$lwjglVersion"
-	}
+	runtimeOnly "org.lwjgl:lwjgl::$lwjglNatives"
+	runtimeOnly "org.lwjgl:lwjgl-assimp::$lwjglNatives"
+	runtimeOnly "org.lwjgl:lwjgl-glfw::$lwjglNatives"
+	runtimeOnly "org.lwjgl:lwjgl-openal::$lwjglNatives"
+	runtimeOnly "org.lwjgl:lwjgl-opengl::$lwjglNatives"
+	runtimeOnly "org.lwjgl:lwjgl-stb::$lwjglNatives"
+	implementation "org.lwjgl:lwjgl:$lwjglVersion"
+	implementation "org.lwjgl:lwjgl-assimp:$lwjglVersion"
+	implementation "org.lwjgl:lwjgl-glfw:$lwjglVersion"
+	implementation "org.lwjgl:lwjgl-openal:$lwjglVersion"
+	implementation "org.lwjgl:lwjgl-opengl:$lwjglVersion"
+	implementation "org.lwjgl:lwjgl-stb:$lwjglVersion"
 }
 
 java {
@@ -182,10 +140,7 @@ jar {
 }
 
 configurations.configureEach {
-	// Removes LWJGL2 dependencies
-	if (project.bta_version.contains("7.3")) {
-		exclude group: "org.lwjgl.lwjgl"
-	}
+	exclude group: "org.lwjgl.lwjgl"
 }
 
 processResources {
